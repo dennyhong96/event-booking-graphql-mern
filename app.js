@@ -1,3 +1,5 @@
+require("dotenv").config({ path: "./config/config.env" });
+require("./config/db")();
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");

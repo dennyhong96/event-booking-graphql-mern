@@ -16,12 +16,18 @@ const eventSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+    get: formatDate,
   },
   creator: {
     type: mongoose.Schema.ObjectId,
     ref: "User",
+    autoPopulate: true,
     required: true,
   },
 });
+
+function formatDate(v) {
+  return new Date(v).toISOString();
+}
 
 module.exports = mongoose.model("Event", eventSchema);

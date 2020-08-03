@@ -4,6 +4,8 @@ const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
 
+const bcrypt = require("bcryptjs");
+
 const Event = require("./models/Event");
 const User = require("./models/User");
 
@@ -22,11 +24,22 @@ app.use(
         date: String!
       }
 
+      type User {
+        _id: ID!
+        email: String!
+        password: String
+      }
+
       input EventInput {
         title: String!
         description: String!
         price: Float!
         date: String!
+      }
+
+      input UserInput {
+        email: String!
+        password: String!
       }
 
       type RootQuery {
@@ -35,6 +48,7 @@ app.use(
 
       type RootMutation {
         createEvent(eventInput: EventInput): Event
+        createUser(userInput: UserInput): User
       }
 
       schema {
@@ -60,6 +74,19 @@ app.use(
             date: new Date(args.eventInput.date),
           });
           return event;
+        } catch (error) {
+          console.error(error);
+          throw error;
+        }
+      },
+      createUser: async (args) => {
+        try {
+          const { email, password: plainPassword } = args.userInput;
+          const password = await bcrypt.hash(plainPassword, 12);
+          // Get rid of the password field, ._doc gives a plain js object
+          let user = { ...(await User.create({ email, password }))._doc };
+          delete user.password;
+          return user;
         } catch (error) {
           console.error(error);
           throw error;

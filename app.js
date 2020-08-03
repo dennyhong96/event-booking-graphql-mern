@@ -2,7 +2,7 @@ require("dotenv").config({ path: "./config/config.env" });
 require("./config/db")();
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const { buildSchema } = require("graphql");
+const { buildSchema, isCompositeType } = require("graphql");
 
 const bcrypt = require("bcryptjs");
 
@@ -12,9 +12,37 @@ const User = require("./models/User");
 const app = express();
 app.use(express.json());
 
+// Merging helpers
+const populateCreator = async (userId) => {
+  try {
+    const user = await User.findById(userId);
+    return {
+      ...user._doc,
+      createdEvents: populateEvents(user._doc.createdEvents),
+    };
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+const populateEvents = async (eventIds) => {
+  try {
+    return (await Event.find({ _id: { $in: eventIds } })).map((event) => ({
+      ...event._doc,
+      creator: populateCreator(event._doc.creator),
+    }));
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+};
+
+// GraphQL server
 app.use(
   "/graphql",
   graphqlHTTP({
+    // Schema
     schema: buildSchema(`
       type Event {
         _id: ID!
@@ -22,19 +50,21 @@ app.use(
         description: String!
         price: Float!
         date: String!
+        creator: User!
       }
 
       type User {
         _id: ID!
         email: String!
         password: String
+        createdEvents: [Event!]
       }
 
       input EventInput {
         title: String!
         description: String!
         price: Float!
-        date: String!
+        date: String
       }
 
       input UserInput {
@@ -57,9 +87,13 @@ app.use(
       }
     `),
     rootValue: {
+      // Resolvers
       events: async () => {
         try {
-          const events = await Event.find();
+          const events = (await Event.find()).map((event) => ({
+            ...event._doc,
+            creator: populateCreator(event._doc.creator),
+          }));
           return events;
         } catch (error) {
           console.error(error);
@@ -71,9 +105,19 @@ app.use(
           const event = await Event.create({
             ...args.eventInput,
             price: +args.eventInput.price,
-            date: new Date(args.eventInput.date),
+            creator: "5f27fe3aa52c83ba175bb1c0",
           });
-          return event;
+          await User.findByIdAndUpdate(
+            "5f27fe3aa52c83ba175bb1c0",
+            {
+              $push: { createdEvents: event },
+            },
+            { runValidators: true }
+          );
+          return {
+            ...event._doc,
+            creator: populateCreator(event._doc.creator),
+          };
         } catch (error) {
           console.error(error);
           throw error;

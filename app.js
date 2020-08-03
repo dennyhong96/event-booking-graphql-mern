@@ -5,6 +5,7 @@ const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
 
 const Event = require("./models/Event");
+const User = require("./models/User");
 
 const app = express();
 app.use(express.json());

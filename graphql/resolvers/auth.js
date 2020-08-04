@@ -22,7 +22,7 @@ module.exports = {
   login: async ({ email, password }) => {
     try {
       const user = await User.findOne({ email }).select("password");
-      console.log(user);
+      if (!user) throw new Error("User not found");
       if (!(await bcrypt.compare(password, user.password))) {
         throw new Error("Invalid credentials");
       }

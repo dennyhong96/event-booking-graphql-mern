@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import axios from "axios";
 
+import AuthContext from "../../context/authContext";
 import "./Auth.css";
 
 const config = {
@@ -10,6 +11,8 @@ const config = {
 };
 
 const Auth = () => {
+  const { login } = useContext(AuthContext);
+
   const [isLoginMode, setIsLoginMode] = useState(true);
 
   const [formData, setFormData] = useState({
@@ -59,6 +62,11 @@ const Auth = () => {
         config
       );
       console.log(res.data);
+
+      if (isLoginMode) {
+        localStorage.setItem("jwt", res.data.data.login.token);
+        login(res.data.data.login.token, res.data.data.login.userId);
+      }
     } catch (error) {
       console.error(error.response);
     }

@@ -11,18 +11,14 @@
 }
 
 .form-control input {
-  font: inherit;
-  height: 1.5rem;
-  font-size: 1.2rem;
-  color: rgba(0, 0, 0, 0.5);
+  outline: none;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  border-radius: 3px;
+  padding: 0.25rem 0.5rem;
 }
 
 .form-control input:focus {
-  outline: none;
-}
-
-.form-control label {
-  margin-bottom: 0.5rem;
+  background-color: blanchedalmond;
 }
 
 .form-control {

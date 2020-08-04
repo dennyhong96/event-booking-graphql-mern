@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import axios from "axios";
 
+import BookingList from "../bookings/BookingList";
 import Spinner from "../spinner/Spinner";
 
 const config = {
@@ -52,16 +53,7 @@ const Bookings = () => {
   return (
     <Fragment>
       {loading && <Spinner />}
-      <ul>
-        {bookings.length
-          ? bookings.map((booking) => (
-              <li key={booking._id}>
-                {booking.event.title} - {console.log(booking.createdAt)}
-                {new Date(Number(booking.createdAt)).toLocaleDateString()}
-              </li>
-            ))
-          : null}
-      </ul>
+      <BookingList bookings={bookings} />
     </Fragment>
   );
 };

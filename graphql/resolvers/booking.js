@@ -14,7 +14,7 @@ module.exports = {
       if (!req.isAuth) {
         throw new Error("Please log in");
       }
-      const bookings = await Booking.find()
+      const bookings = await Booking.find({ user: req.userId })
         .populate(userField)
         .populate(eventField);
       console.log(bookings);

@@ -67,8 +67,8 @@ const Events = () => {
     if (token) {
       const bookEventBody = {
         query: `
-          mutation {
-            bookEvent(eventId:"${selectedEvent._id}"){
+          mutation BookEvent($selectedEventId: ID!){
+            bookEvent(eventId:$selectedEventId){
               _id
               event {
                 title
@@ -83,6 +83,9 @@ const Events = () => {
             }
           }
         `,
+        variables: {
+          selectedEventId: selectedEvent._id,
+        },
       };
       try {
         const res = await axios.post("/graphql", bookEventBody, config);
@@ -105,8 +108,8 @@ const Events = () => {
       console.log(formData);
       const body = {
         query: `
-          mutation {
-            createEvent(eventInput:{title:"${title}",description:"${description}",price:${price},date:"${date}"}){
+          mutation CreateEvent($title: String!, $description: String!, $price: Float!, $date: String!){
+            createEvent(eventInput:{title:$title,description:$description,price:$price,date:$date}){
               _id
               title
               description
@@ -119,6 +122,12 @@ const Events = () => {
             }
           }
         `,
+        variables: {
+          title,
+          description,
+          price: Number(price),
+          date,
+        },
       };
 
       try {

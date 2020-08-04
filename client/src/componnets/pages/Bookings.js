@@ -53,8 +53,8 @@ const Bookings = () => {
   const handleCancel = async (bookingId) => {
     const cancelBody = {
       query: `
-        mutation {
-          cancelBooking(bookingId:"${bookingId}"){
+        mutation CancelBooking($bookingId: ID!){
+          cancelBooking(bookingId:$bookingId){
             _id
             title
             description
@@ -66,6 +66,9 @@ const Bookings = () => {
           }
         }
       `,
+      variables: {
+        bookingId,
+      },
     };
     try {
       const res = await axios.post("/graphql", cancelBody, config);

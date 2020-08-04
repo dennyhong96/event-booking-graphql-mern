@@ -35,24 +35,32 @@ const Auth = () => {
 
     const signupBody = {
       query: `
-        mutation {
-          createUser(userInput: {email: "${email}", password: "${password}"}){
+        mutation CreateUser($email: String!, $password: String!) {
+          createUser(userInput: {email: $email, password: $password}){
             email
             _id
           }
         }
       `,
+      variables: {
+        email,
+        password,
+      },
     };
 
     const loginBody = {
       query: `
-        query {
-          login(email: "${email}", password: "${password}"){
+        query Login($email: String!, $password: String!) {
+          login(email: $email, password: $password){
             token
             userId
           }
         }
       `,
+      variables: {
+        email,
+        password,
+      },
     };
 
     try {

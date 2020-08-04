@@ -6,10 +6,12 @@ const cors = require("cors");
 
 const schema = require("./graphql/schema/index");
 const rootValue = require("./graphql/resolvers/index");
+const isAuth = require("./middlewares/isAuth");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(isAuth);
 
 // GraphQL server
 app.use(

@@ -8,8 +8,11 @@ const {
 // Booking Resolvers
 module.exports = {
   // Get all bookings
-  bookings: async () => {
+  bookings: async (args, req) => {
     try {
+      if (!req.idAuth) {
+        throw new Error("Please log in");
+      }
       const bookings = await Booking.find()
         .populate(userField)
         .populate(eventField);
@@ -21,8 +24,11 @@ module.exports = {
   },
 
   // Create a booking
-  bookEvent: async (args) => {
+  bookEvent: async (args, req) => {
     try {
+      if (!req.idAuth) {
+        throw new Error("Please log in");
+      }
       const event = Event.findById(args.eventId);
       if (!event) throw new Error("Event not found");
       const booking = await Booking.create({
@@ -39,8 +45,11 @@ module.exports = {
   },
 
   // Cancel a booking
-  cancelBooking: async (args) => {
+  cancelBooking: async (args, req) => {
     try {
+      if (!req.idAuth) {
+        throw new Error("Please log in");
+      }
       const deletedBooking = await Booking.findByIdAndDelete(args.bookingId);
       if (!deletedBooking) throw new Error("Booking not found");
       const event = await Event.findById(deletedBooking.event).populate(

@@ -15,8 +15,11 @@ module.exports = {
   },
 
   // Create an event
-  createEvent: async (args) => {
+  createEvent: async (args, req) => {
     try {
+      if (!req.isAuth) {
+        throw new Error("Please log in");
+      }
       const event = await Event.create({
         ...args.eventInput,
         price: +args.eventInput.price,

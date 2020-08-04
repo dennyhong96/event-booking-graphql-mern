@@ -23,13 +23,14 @@ module.exports = {
       if (!req.isAuth) {
         throw new Error("Please log in");
       }
+
       const event = await Event.create({
         ...args.eventInput,
         price: +args.eventInput.price,
-        creator: "5f27fe3aa52c83ba175bb1c0",
+        creator: req.userId,
       });
       await User.findByIdAndUpdate(
-        "5f27fe3aa52c83ba175bb1c0",
+        req.userId,
         {
           $push: { createdEvents: event },
         },

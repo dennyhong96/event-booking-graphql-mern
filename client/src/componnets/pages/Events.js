@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
+import Spinner from "../spinner/Spinner";
 import EventList from "../events/EventList";
 import AuthContext from "../../context/authContext";
 import Modal from "../Modal/Modal";
@@ -14,6 +15,8 @@ const config = {
 };
 
 const Events = () => {
+  const [loading, setLoading] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
   useEffect(() => {
     (async () => {
       const fetchEventsBody = {
@@ -34,14 +37,22 @@ const Events = () => {
         `,
       };
       try {
+        setLoading(true);
         const res = await axios.post("/graphql", fetchEventsBody, config);
         setEvents(res.data.data.events);
         console.log(res.data);
+        setLoading(false);
       } catch (error) {
+        setLoading(false);
         console.error(error.response);
       }
     })();
   }, []);
+
+  const handleViewDetail = (eventId) => {
+    setSelectedEvent(events.find((event) => event._id === eventId));
+  };
+  const bookEventHandler = () => {};
 
   const [events, setEvents] = useState([]);
   const [creating, toggleCreating] = useState(false);
@@ -104,7 +115,11 @@ const Events = () => {
           </button>
         </div>
       )}
-      <EventList events={events} />
+      {loading ? (
+        <Spinner />
+      ) : (
+        <EventList events={events} onViewDetail={handleViewDetail} />
+      )}
       {creating && (
         <Fragment>
           <Modal
@@ -113,6 +128,7 @@ const Events = () => {
             canConfirm
             onCancel={() => toggleCreating(false)}
             onSubmit={handleSubmit}
+            confirmText="Confirm"
           >
             <form>
               <div className="form-control">
@@ -156,6 +172,23 @@ const Events = () => {
                 ></textarea>
               </div>
             </form>
+          </Modal>
+          <Backdrop />
+        </Fragment>
+      )}
+      {selectedEvent && (
+        <Fragment>
+          <Modal
+            title={selectedEvent.title}
+            canCancel
+            canConfirm
+            onCancel={() => setSelectedEvent(null)}
+            onSubmit={bookEventHandler}
+            confirmText="Book"
+          >
+            <h1>{selectedEvent.title}</h1>
+            <h2>{new Date(selectedEvent.date).toLocaleDateString()}</h2>
+            <p>{selectedEvent.description}</p>
           </Modal>
           <Backdrop />
         </Fragment>

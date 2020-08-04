@@ -3,7 +3,7 @@ import React from "react";
 import EventItem from "./EventItem";
 import "./EventList.css";
 
-const EventList = ({ events }) => {
+const EventList = ({ events, onViewDetail }) => {
   return (
     <ul className="events__list">
       {events.length
@@ -15,6 +15,8 @@ const EventList = ({ events }) => {
               title={event.title}
               price={event.price}
               userId={event.creator._id}
+              date={event.date}
+              onDetail={onViewDetail}
             />
           ))
         : null}

@@ -16,8 +16,8 @@ const eventSchema = new mongoose.Schema(
     },
     date: {
       type: Date,
-      default: Date.now,
       get: formatDate,
+      required: true,
     },
     creator: {
       type: mongoose.Schema.ObjectId,

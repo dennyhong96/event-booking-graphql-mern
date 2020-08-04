@@ -18,7 +18,6 @@ const Events = () => {
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
-  const [bookings, setBookings] = useState([]);
   const [creating, toggleCreating] = useState(false);
   const { token } = useContext(AuthContext);
   const [formData, setFormData] = useState({
@@ -59,42 +58,6 @@ const Events = () => {
       }
     })();
   }, []);
-
-  useEffect(() => {
-    if (token) {
-      (async () => {
-        const fetchBookingsBody = {
-          query: `
-            query {
-              bookings {
-                _id
-                event {
-                  title
-                  _id
-                }
-                user {
-                  email
-                  _id
-                }
-                createdAt
-                updatedAt
-              }
-            }
-          `,
-        };
-        try {
-          const bookingsRes = await axios.post(
-            "/graphql",
-            fetchBookingsBody,
-            config
-          );
-          setBookings(bookingsRes.data.data.events);
-        } catch (error) {
-          console.error(error.response);
-        }
-      })();
-    }
-  }, [token]);
 
   const handleViewDetail = (eventId) => {
     setSelectedEvent(events.find((event) => event._id === eventId));

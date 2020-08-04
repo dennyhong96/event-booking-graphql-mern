@@ -17,6 +17,18 @@ const config = {
 const Events = () => {
   const [loading, setLoading] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [events, setEvents] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [creating, toggleCreating] = useState(false);
+  const { token } = useContext(AuthContext);
+  const [formData, setFormData] = useState({
+    title: "",
+    price: "",
+    date: "",
+    description: "",
+  });
+  const { title, price, date, description } = formData;
+
   useEffect(() => {
     (async () => {
       const fetchEventsBody = {
@@ -38,9 +50,8 @@ const Events = () => {
       };
       try {
         setLoading(true);
-        const res = await axios.post("/graphql", fetchEventsBody, config);
-        setEvents(res.data.data.events);
-        console.log(res.data);
+        const eventsRes = await axios.post("/graphql", fetchEventsBody, config);
+        setEvents(eventsRes.data.data.events);
         setLoading(false);
       } catch (error) {
         setLoading(false);
@@ -49,23 +60,76 @@ const Events = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    if (token) {
+      (async () => {
+        const fetchBookingsBody = {
+          query: `
+            query {
+              bookings {
+                _id
+                event {
+                  title
+                  _id
+                }
+                user {
+                  email
+                  _id
+                }
+                createdAt
+                updatedAt
+              }
+            }
+          `,
+        };
+        try {
+          const bookingsRes = await axios.post(
+            "/graphql",
+            fetchBookingsBody,
+            config
+          );
+          setBookings(bookingsRes.data.data.events);
+        } catch (error) {
+          console.error(error.response);
+        }
+      })();
+    }
+  }, [token]);
+
   const handleViewDetail = (eventId) => {
     setSelectedEvent(events.find((event) => event._id === eventId));
   };
-  const bookEventHandler = () => {};
 
-  const [events, setEvents] = useState([]);
-  const [creating, toggleCreating] = useState(false);
-  const [formData, setFormData] = useState({
-    title: "",
-    price: "",
-    date: "",
-    description: "",
-  });
-
-  const { token } = useContext(AuthContext);
-
-  const { title, price, date, description } = formData;
+  const bookEventHandler = async () => {
+    if (token) {
+      const bookEventBody = {
+        query: `
+          mutation {
+            bookEvent(eventId:"${selectedEvent._id}"){
+              _id
+              event {
+                title
+                _id
+              }
+              user {
+                email
+                _id
+              }
+              createdAt
+              updatedAt
+            }
+          }
+        `,
+      };
+      try {
+        const res = await axios.post("/graphql", bookEventBody, config);
+        console.log(res.data);
+      } catch (error) {
+        console.error(error.response);
+      }
+    }
+    setSelectedEvent(null);
+  };
 
   const handleChange = (evt) => {
     const { name, value } = evt.target;
@@ -184,7 +248,7 @@ const Events = () => {
             canConfirm
             onCancel={() => setSelectedEvent(null)}
             onSubmit={bookEventHandler}
-            confirmText="Book"
+            confirmText={token ? "Book" : "Confirm"}
           >
             <h1>{selectedEvent.title}</h1>
             <h2>{new Date(selectedEvent.date).toLocaleDateString()}</h2>

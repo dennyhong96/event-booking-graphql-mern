@@ -17,6 +17,7 @@ module.exports = {
       const bookings = await Booking.find()
         .populate(userField)
         .populate(eventField);
+      console.log(bookings);
       return bookings;
     } catch (error) {
       console.error(error);

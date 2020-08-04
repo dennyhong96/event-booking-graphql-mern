@@ -35,7 +35,7 @@ module.exports = {
       if (!event) throw new Error("Event not found");
       const booking = await Booking.create({
         event: args.eventId,
-        user: "5f27fe3aa52c83ba175bb1c0",
+        user: req.userId,
       });
       return await Booking.findById(booking._id)
         .populate(userField)

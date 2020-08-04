@@ -2,7 +2,7 @@ import React from "react";
 
 import "./BookingItem.css";
 
-const BookingItem = ({ booking }) => {
+const BookingItem = ({ booking, onCancel }) => {
   return (
     <li className="booking__item">
       <div className="booking__item-data">
@@ -10,7 +10,9 @@ const BookingItem = ({ booking }) => {
         {new Date(Number(booking.createdAt)).toLocaleDateString()}
       </div>
       <div className="booking__item-actions">
-        <button className="btn">Cancel</button>
+        <button className="btn" onClick={() => onCancel(booking._id)}>
+          Cancel
+        </button>
       </div>
     </li>
   );

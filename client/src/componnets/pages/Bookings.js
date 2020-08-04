@@ -12,7 +12,6 @@ const config = {
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([]);
-
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     (async () => {
@@ -50,10 +49,38 @@ const Bookings = () => {
       }
     })();
   }, []);
+
+  const handleCancel = async (bookingId) => {
+    const cancelBody = {
+      query: `
+        mutation {
+          cancelBooking(bookingId:"${bookingId}"){
+            _id
+            title
+            description
+            price
+            date
+            creator {
+              email
+            }
+          }
+        }
+      `,
+    };
+    try {
+      const res = await axios.post("/graphql", cancelBody, config);
+
+      setBookings((prev) =>
+        prev.filter((booking) => booking._id !== bookingId)
+      );
+    } catch (error) {
+      console.error(error.response);
+    }
+  };
   return (
     <Fragment>
       {loading && <Spinner />}
-      <BookingList bookings={bookings} />
+      <BookingList bookings={bookings} handleCancel={handleCancel} />
     </Fragment>
   );
 };

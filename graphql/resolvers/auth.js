@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const User = require("../../models/User");
 
@@ -18,4 +19,25 @@ module.exports = {
     }
   },
   // Login user
+  login: async ({ email, password }) => {
+    try {
+      const user = await User.findOne({ email }).select("password");
+      console.log(user);
+      if (!(await bcrypt.compare(password, user.password))) {
+        throw new Error("Invalid credentials");
+      }
+      return {
+        userId: user.id,
+        token: jwt.sign(
+          { userId: user.id, userEmail: user.email },
+          process.env.JWT_SECRET,
+          { expiresIn: process.env.JWT_EXPIRES }
+        ),
+        tokenExpiration: 1,
+      };
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  },
 };

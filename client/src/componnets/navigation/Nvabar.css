@@ -24,9 +24,14 @@
   margin-left: 1rem;
 }
 
-.main-navbar .main-navbar__items ul li a {
+.main-navbar .main-navbar__items ul li a,
+.main-navbar .main-navbar__items ul li button {
   color: #000;
+  background-color: inherit;
 }
+
+.main-navbar .main-navbar__items ul li button:hover,
+.main-navbar .main-navbar__items ul li button:active,
 .main-navbar .main-navbar__items ul li a:hover,
 .main-navbar .main-navbar__items ul li a:active,
 .main-navbar .main-navbar__items ul li a.active {

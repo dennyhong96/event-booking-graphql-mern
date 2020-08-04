@@ -64,7 +64,6 @@ const Auth = () => {
       console.log(res.data);
 
       if (isLoginMode) {
-        localStorage.setItem("jwt", res.data.data.login.token);
         login(res.data.data.login.token, res.data.data.login.userId);
       }
     } catch (error) {

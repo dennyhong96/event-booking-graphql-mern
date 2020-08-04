@@ -12,9 +12,11 @@ function App() {
   const [state, setState] = useState({ token: null, userId: null });
   const { token, userId } = state;
   const login = (token, userId, tokenExpiration) => {
+    localStorage.setItem("jwt", token);
     setState({ token, userId });
   };
   const logout = () => {
+    localStorage.removeItem("jwt", token);
     setState({ token: null, userId: null });
   };
   return (
@@ -23,13 +25,13 @@ function App() {
         <Navbar />
         <main className="main-content">
           <Switch>
-            {!token && <Redirect exact from="/" to="/auth" />}
             {!token && <Route exact path="/auth" component={Auth} />}
             <Route exact path="/events" component={Events} />
             {token && <Route exact path="/bookings" component={Bookings} />}
             {!token && <Redirect exact from="/bookings" to="/auth" />}
             {token && <Redirect exact from="/" to="/events" />}
             {token && <Redirect exact from="/auth" to="/events" />}
+            {!token && <Redirect exact to="/auth" />}
           </Switch>
         </main>
       </AuthContext.Provider>

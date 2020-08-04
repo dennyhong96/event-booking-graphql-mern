@@ -1,4 +1,5 @@
 const Booking = require("../../models/Booking");
+const Event = require("../../models/Event");
 const {
   creatorField,
   userField,
@@ -10,7 +11,7 @@ module.exports = {
   // Get all bookings
   bookings: async (args, req) => {
     try {
-      if (!req.idAuth) {
+      if (!req.isAuth) {
         throw new Error("Please log in");
       }
       const bookings = await Booking.find()
@@ -26,7 +27,7 @@ module.exports = {
   // Create a booking
   bookEvent: async (args, req) => {
     try {
-      if (!req.idAuth) {
+      if (!req.isAuth) {
         throw new Error("Please log in");
       }
       const event = Event.findById(args.eventId);
@@ -47,7 +48,7 @@ module.exports = {
   // Cancel a booking
   cancelBooking: async (args, req) => {
     try {
-      if (!req.idAuth) {
+      if (!req.isAuth) {
         throw new Error("Please log in");
       }
       const deletedBooking = await Booking.findByIdAndDelete(args.bookingId);

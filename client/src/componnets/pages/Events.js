@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext, useEffect } from "react";
 import axios from "axios";
 
+import EventList from "../events/EventList";
 import AuthContext from "../../context/authContext";
 import Modal from "../Modal/Modal";
 import Backdrop from "../Modal/Backdrop";
@@ -103,15 +104,7 @@ const Events = () => {
           </button>
         </div>
       )}
-      <ul className="events__list">
-        {events.length
-          ? events.map((event) => (
-              <li key={event._id} className="events__list-item">
-                {event.title}
-              </li>
-            ))
-          : null}
-      </ul>
+      <EventList events={events} />
       {creating && (
         <Fragment>
           <Modal

@@ -7,7 +7,9 @@ module.exports = {
   // Get all events
   events: async () => {
     try {
-      const events = await Event.find().populate(creatorField);
+      const events = await Event.find()
+        .sort({ createdAt: -1 })
+        .populate(creatorField);
       return events;
     } catch (error) {
       console.error(error);

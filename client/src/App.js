@@ -11,11 +11,14 @@ import "./App.css";
 
 function App() {
   useEffect(() => {
-    if (localStorage.getItem("jwt")) {
+    if (localStorage.getItem("jwt") && localStorage.getItem("userId")) {
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${localStorage.getItem("jwt")}`;
-      setState({ token: localStorage.getItem("jwt") });
+      setState({
+        token: localStorage.getItem("jwt"),
+        userId: localStorage.getItem("userId"),
+      });
     }
   }, []);
 
@@ -23,11 +26,13 @@ function App() {
   const { token, userId } = state;
   const login = (token, userId, tokenExpiration) => {
     localStorage.setItem("jwt", token);
+    localStorage.setItem("userId", userId);
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setState({ token, userId });
   };
   const logout = () => {
     localStorage.removeItem("jwt", token);
+    localStorage.removeItem("userId", userId);
     setState({ token: null, userId: null });
   };
 

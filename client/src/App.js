@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import axios from "axios";
 
 import AuthContext from "./context/authContext";
 import Navbar from "./componnets/navigation/Navbar";
@@ -9,16 +10,27 @@ import Bookings from "./componnets/pages/Bookings";
 import "./App.css";
 
 function App() {
+  useEffect(() => {
+    if (localStorage.getItem("jwt")) {
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${localStorage.getItem("jwt")}`;
+      setState({ token: localStorage.getItem("jwt") });
+    }
+  }, []);
+
   const [state, setState] = useState({ token: null, userId: null });
   const { token, userId } = state;
   const login = (token, userId, tokenExpiration) => {
     localStorage.setItem("jwt", token);
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     setState({ token, userId });
   };
   const logout = () => {
     localStorage.removeItem("jwt", token);
     setState({ token: null, userId: null });
   };
+
   return (
     <BrowserRouter>
       <AuthContext.Provider value={{ token, userId, logout, login }}>

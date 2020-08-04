@@ -5,19 +5,22 @@
 }
 
 .form-control label,
-.form-control input {
+.form-control input,
+.form-control textarea {
   width: 100%;
   display: block;
 }
 
-.form-control input {
+.form-control input,
+.form-control textarea {
   outline: none;
   border: 1px solid rgba(0, 0, 0, 0.7);
   border-radius: 3px;
   padding: 0.25rem 0.5rem;
 }
 
-.form-control input:focus {
+.form-control input:focus,
+.form-control textarea:focus {
   background-color: blanchedalmond;
 }
 
